@@ -1,0 +1,77 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+// structure to represent a time
+typedef struct {
+    int hour;
+    int minute;
+    bool pm;
+} Time;
+
+// function to parse a time string into a Time struct
+Time ParseTime(char* timeStr) {
+    Time time;
+    char* token = strtok(timeStr, ":");
+    time.hour = atoi(token);
+    token = strtok(NULL, "APM");
+    time.minute = atoi(token);
+    token = strtok(NULL, "-");
+    if (strstr(token, "PM") != NULL) {
+        time.pm = true;
+    } else {
+        time.pm = false;
+    }
+    return time;
+}
+
+// function to calculate the difference between two times in minutes
+int TimeDifference(Time t1, Time t2) {
+    int minutes1 = t1.hour * 60 + t1.minute;
+    int minutes2 = t2.hour * 60 + t2.minute;
+    if (t1.pm && !t2.pm) {
+        minutes2 += 12 * 60;
+    }
+    return minutes2 - minutes1;
+}
+
+char* ArrayChallenge(char** strArr, int arrLength) {
+    // parse the event times into Time structs and sort them by start time
+    Time events[arrLength];
+    for (int i = 0; i < arrLength; i++) {
+        events[i] = ParseTime(strArr[i]);
+    }
+    for (int i = 0; i < arrLength - 1; i++) {
+        for (int j = i + 1; j < arrLength; j++) {
+            if (TimeDifference(events[i], events[j]) > 0) {
+                Time temp = events[i];
+                events[i] = events[j];
+                events[j] = temp;
+            }
+        }
+    }
+    // calculate the free time between events
+    int maxFreeTime = 0;
+    for (int i = 0; i < arrLength - 1; i++) {
+        int freeTime = TimeDifference(events[i], events[i + 1]);
+        if (freeTime > maxFreeTime) {
+            maxFreeTime = freeTime;
+        }
+    }
+    // convert the free time to hh:mm format and return as a string
+    int hours = maxFreeTime / 60;
+    int minutes = maxFreeTime % 60;
+    char* result = (char*) malloc(6);
+    sprintf(result, "%02d:%02d", hours, minutes);
+    return result;
+}
+
+int main() {
+    char* strArr[] = {"10:00AM-12:30PM", "02:00PM-02:45PM", "09:10AM-09:50AM"};
+    int arrLength = 3;
+    char* result = ArrayChallenge(strArr, arrLength);
+    printf("%s\n", result); // expected output: 01:30
+    free(result);
+    return 0;
+}
