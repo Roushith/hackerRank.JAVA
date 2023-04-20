@@ -1,0 +1,35 @@
+#include <stdio.h>
+
+int ArrayChallenge(int arr[], int size) {
+    int min_price = arr[0];
+    int max_profit = -1;
+
+    for (int i = 1; i < size; i++) {
+        int curr_price = arr[i];
+        int curr_profit = curr_price - min_price;
+
+        if (curr_profit > max_profit) {
+            max_profit = curr_profit;
+        }
+
+        if (curr_price < min_price) {
+            min_price = curr_price;
+        }
+    }
+
+    return max_profit;
+}
+
+int main() {
+    int arr[] = {44, 30, 24, 32, 35, 30, 40, 38, 15};
+    int size = sizeof(arr) / sizeof(arr[0]);
+    int max_profit = ArrayChallenge(arr, size);
+    printf("%d\n", max_profit);
+
+    int arr2[] = {10, 9, 8, 2};
+    int size2 = sizeof(arr2) / sizeof(arr2[0]);
+    int max_profit2 = ArrayChallenge(arr2, size2);
+    printf("%d\n", max_profit2);
+
+    return 0;
+}
