@@ -1,0 +1,85 @@
+#include <stdio.h>
+
+#include <string.h>
+
+char* SearchingChallenge(char* str) {
+
+    int k = str[0] - '0'; // convert the first character to integer
+
+    int len = strlen(str);
+
+    int freq[256] = {0}; // frequency array to count unique characters
+
+    int count = 0; // count of unique characters in the current substring
+
+    int start = 1; // start index of the current substring
+
+    int max_len = 0; // length of the longest substring
+
+    int max_start = 0; // start index of the longest substring
+
+    
+
+    for (int i = 1; i < len; i++) {
+
+        char c = str[i];
+
+        freq[c]++;
+
+        if (freq[c] == 1) { // a new unique character is found
+
+            count++;
+
+        }
+
+        while (count > k) { // remove the extra unique characters from the substring
+
+            char first = str[start];
+
+            freq[first]--;
+
+            if (freq[first] == 0) {
+
+                count--;
+
+            }
+
+            start++;
+
+        }
+
+        int curr_len = i - start + 1;
+
+        if (curr_len > max_len) { // update the longest substring
+
+            max_len = curr_len;
+
+            max_start = start;
+
+        }
+
+    }
+
+    char* result = (char*) malloc(max_len + 1); // allocate memory for the result string
+
+    strncpy(result, str + max_start, max_len); // copy the longest substring to the result string
+
+    result[max_len] = '\0'; // add null terminator
+
+    return result;
+
+}
+
+int main() {
+
+    char str[] = "2aabbacbaa";
+
+    char* result = SearchingChallenge(str);
+
+    printf("%s\n", result); // expected output: aabba
+
+    free(result);
+
+    return 0;
+
+}
